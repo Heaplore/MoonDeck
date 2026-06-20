@@ -110,23 +110,16 @@ class DesktopPet(QWidget):
         ("lian",         "Lian",       "lian_sheet.png",               0),
     ]
 
-    # 随机台词 (可放 yaml 配置, 暂写死)
-    BUBBLE_LINES = [
-        "主人好呀",
-        "今天深圳下雨哦",
-        "音乐好听吗？",
-        "别忘了喝水",
-        "月色真美",
-        "再忙也要休息",
-        "加油~",
-        "...",
-        "夜深了，早点睡",
-        "工作顺利吗",
-        "吃点东西吧",
-    ]
+    # 台词已迁移到 core/pet_dialogue.py，支持 AI 实时生成
 
     def __init__(self, parent=None):
         super().__init__(parent)
+        # 天气 + 音乐状态缓存（供台词生成使用）
+        self._weather_cache: Optional[Dict] = None
+        self._music_cache: Optional[Dict] = None
+        self._update_context_timer = QTimer(self)
+        self._update_context_timer.timeout.connect(self._update_context)
+        self._update_context_timer.start(60000)  # 每分钟刷新一次上下文
 
         # 窗口: 无边框、置顶、tool (不抢任务栏)
         self.setWindowFlags(
@@ -319,7 +312,7 @@ class DesktopPet(QWidget):
             self.setCursor(Qt.CursorShape.ArrowCursor)
             self._dock_to_edge()
             # 弹个气泡
-            self._show_bubble(random.choice(self.BUBBLE_LINES))
+            self._show_bubble(self._get_dialogue())
             # 点击 → waving 动作 (row 3, 4 帧)
             self._current_row = 3
             self._current_frame = 0
@@ -428,6 +421,35 @@ class DesktopPet(QWidget):
         self._bubble_text = text
         self._bubble_time = 3.0
         self._bubble_showing = True
+
+    def _update_context(self) -> None:
+        """更新天气和音乐状态缓存"""
+        # 天气
+        try:
+            from cards.calendar_card.weather_widget import WeatherWidget
+            if hasattr(WeatherWidget, '_current_weather'):
+                self._weather_cache = WeatherWidget._current_weather
+        except Exception:
+            pass
+        # 音乐
+        try:
+            from cards.music_card import audio_viz
+            np_ = audio_viz.get_now_playing()
+            self._music_cache = {
+                "playing": getattr(np_, "playing", False),
+                "title": getattr(np_, "song_title", ""),
+                "artist": getattr(np_, "song_artist", ""),
+            }
+        except Exception:
+            pass
+
+    def _get_dialogue(self) -> str:
+        """获取台词（AI 生成或回退）"""
+        from core.pet_dialogue import generate_dialogue
+        return generate_dialogue(
+            weather=self._weather_cache,
+            music=self._music_cache,
+        )
 
     # ==================================================================
     # 绘制

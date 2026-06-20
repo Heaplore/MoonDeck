@@ -20,6 +20,9 @@ from PyQt6.QtCore import QObject, QTimer, pyqtSignal
 
 _LOG = logging.getLogger("moondeck.weather")
 
+# 全局天气数据缓存（供桌宠台词生成使用）
+_current_weather: Optional[Dict] = None
+
 # ============== 配置 ==============
 _HOST = "https://wttr.in"
 _CITY = "Shenzhen"  # 硬编码深圳(老大位置),后续支持 IP 自动定位
@@ -170,6 +173,12 @@ class WeatherService(QObject):
             # 写磁盘缓存
             self._save_cache(data)
             self._data = data
+            # 更新全局缓存（供桌宠使用）
+            global _current_weather
+            _current_weather = {
+                "condition": data.now_text,
+                "temperature": data.now_temp,
+            }
         except Exception as e:
             _LOG.warning(f"wttr.in 拉取失败: {e},回退到磁盘缓存")
             cached = self._load_cache()
