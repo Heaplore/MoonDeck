@@ -102,12 +102,16 @@ class DesktopPet(QWidget):
     BUBBLE_H = 24    # 气泡预留区高度 (上方, 按比例缩小)
 
     # 可用角色列表 (key, 显示名, sprite sheet 文件名, 默认 row)
+    # Petdex Codex 格式: 1536x1872 = 8列 x 9行, cell 192x208
     CHARACTERS = [
-        ("chen_qianyu",  "陈千语",     "chen-qianyu_sheet.png",       0),
-        ("wang_lin",     "问鼎王林",   "wang-lin-wending-pixel_sheet.png", 0),
-        ("xiyue",        "汐月同学",   "xiyue_sheet.png",              0),
-        ("yunyun",       "晕晕",       "yunyun_sheet.png",             0),
-        ("lian",         "Lian",       "lian_sheet.png",               0),
+        ("chen_qianyu",  "陈千语",       "chen-qianyu_sheet.png",       0),
+        ("wang_lin",     "问鼎王林",     "wang-lin-wending-pixel_sheet.png", 0),
+        ("xiyue",        "汐月同学",     "xiyue_sheet.png",             0),
+        ("yunyun",       "晕晕",         "yunyun_sheet.png",            0),
+        ("lian",         "Lian",         "lian_sheet.png",              0),
+        ("han-li",       "韩立",         "han-li_sheet.png",            0),
+        ("yinyue-2",     "银月",         "yinyue-2_sheet.png",          0),
+        ("yinyue-yaohu", "银月(妖狐)",   "yinyue-yaohu_sheet.png",      0),
     ]
 
     # 台词已迁移到 core/pet_dialogue.py，支持 AI 实时生成
