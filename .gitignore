@@ -37,6 +37,7 @@ session-*.png
 *.jpeg
 
 # Config files with secrets
+.env
 .st_hwnd.txt
 
 # Render/debug scripts

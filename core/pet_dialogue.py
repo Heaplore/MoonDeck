@@ -1,21 +1,34 @@
 """桌宠气泡台词 - AI 实时生成
 
 根据当前上下文（时间、天气、音乐状态、节日、心情）动态生成台词。
-优先使用 Anthropic API 生成，失败时回退到规则引擎。
+优先使用 Agnes API 生成，失败时回退到规则引擎。
 
 使用方式：
-    from core.pet_dialogue import get_dialogue
-    bubble_text = get_dialogue(weather_data, music_state)
+    from core.pet_dialogue import generate_dialogue
+    bubble_text = generate_dialogue(weather_data, music_state)
+
+配置：
+    设置环境变量 MOONDECK_PET_API_KEY 即可启用 Agnes AI 生成台词
+    不设置则自动回退到规则引擎（基于时间/天气/节日的智能选词）
 """
 from __future__ import annotations
 
 import datetime
 import json
 import logging
+import os
 import random
+import socket
+import threading
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # 没有 python-dotenv 就只用环境变量
 
 logger = logging.getLogger(__name__)
 
@@ -156,33 +169,52 @@ def _build_prompt(context: Dict[str, Any],
 
 
 # ---------------------------------------------------------------------------
-# Anthropic API 生成
+# Agnes API 生成（OpenAI 兼容接口）
 # ---------------------------------------------------------------------------
-def _generate_with_anthropic(prompt: str) -> Optional[str]:
-    """使用 Anthropic Claude 生成台词"""
-    try:
-        import anthropic
-    except ImportError:
-        logger.debug("anthropic 库未安装，使用回退台词")
-        return None
+def _generate_with_agnes(prompt: str) -> Optional[str]:
+    """使用 Agnes API 生成台词（带总超时保护，10 秒内未完成则回退）"""
+    result = [None]
+    error = [None]
 
-    client = anthropic.Anthropic()
-    try:
-        message = client.messages.create(
-            model="claude-sonnet-4-20250514",
-            max_tokens=50,
-            temperature=1.0,
-            messages=[
-                {"role": "user", "content": prompt},
-            ],
-        )
-        text = message.content[0].text.strip()
-        # 清理可能的多余内容
-        text = text.strip('"\'').strip()
-        if text and 2 <= len(text) <= 30:
-            return text
-    except Exception as e:
-        logger.warning(f"Anthropic API 生成台词失败: {e}")
+    def _do_generate():
+        try:
+            from openai import OpenAI
+        except ImportError:
+            return
+
+        api_key = os.environ.get("MOONDECK_PET_API_KEY")
+        if not api_key:
+            return
+
+        try:
+            client = OpenAI(
+                api_key=api_key,
+                base_url="https://apihub.agnes-ai.com/v1",
+            )
+            resp = client.chat.completions.create(
+                model="agnes-2.0-flash",
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=50,
+                temperature=1.0,
+                timeout=8,
+            )
+            text = resp.choices[0].message.content.strip()
+            text = text.strip('"\'').strip()
+            if text and 2 <= len(text) <= 30:
+                result[0] = text
+        except Exception as e:
+            error[0] = str(e)
+
+    thread = threading.Thread(target=_do_generate, daemon=True)
+    thread.start()
+    thread.join(timeout=10)
+
+    if thread.is_alive():
+        logger.warning("Agnes API 超时（>10s），使用回退台词")
+    elif error[0]:
+        logger.warning(f"Agnes API 生成台词失败: {error[0]}")
+    elif result[0]:
+        return result[0]
 
     return None
 
@@ -278,7 +310,7 @@ def generate_dialogue(weather: Optional[Dict] = None,
     prompt = _build_prompt(context, weather, music)
 
     # 优先尝试 AI 生成
-    ai_result = _generate_with_anthropic(prompt)
+    ai_result = _generate_with_agnes(prompt)
     if ai_result:
         logger.info(f"AI 生成台词: {ai_result}")
         return ai_result
