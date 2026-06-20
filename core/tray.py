@@ -104,6 +104,8 @@ class MoonDeckTray:
         on_pet_character_change: Optional[Callable[[str], None]] = None,
         available_pet_characters: Optional[Dict[str, str]] = None,
         current_pet_character: str = "",
+        on_pet_always_on_top: Optional[Callable[[bool], None]] = None,
+        pet_always_on_top: bool = False,
     ):
         self._live_widgets = live_widgets  # 引用 main 的 _live_widgets 防 GC
         self._on_reset_layout = on_reset_layout or (lambda: None)
@@ -123,6 +125,8 @@ class MoonDeckTray:
         self._available_pet_characters = available_pet_characters or {}
         self._current_pet_character = current_pet_character
         self._pet_actions: Dict[str, QAction] = {}
+        self._pet_always_on_top = pet_always_on_top
+        self._on_pet_always_on_top = on_pet_always_on_top or (lambda on: None)
         self._visible_state: Dict[str, bool] = {}  # card_id → bool
 
         # 系统托盘
@@ -233,6 +237,17 @@ class MoonDeckTray:
                 pet_group.addAction(act)
                 pet_sub.addAction(act)
                 self._pet_actions[internal_name] = act
+            menu.addSeparator()
+
+        # === 桌宠置顶 (复选) ===
+        if self._on_pet_always_on_top is not None:
+            act_pet_top = QAction("📌 桌宠始终置顶", menu)
+            act_pet_top.setCheckable(True)
+            act_pet_top.setChecked(self._pet_always_on_top)
+            act_pet_top.toggled.connect(
+                lambda checked, n="pet_top": self._on_pet_always_on_top(checked)
+            )
+            menu.addAction(act_pet_top)
             menu.addSeparator()
 
         # === 设置 / 重置 ===

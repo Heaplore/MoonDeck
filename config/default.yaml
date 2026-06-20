@@ -57,11 +57,11 @@ desktop_background:
 desktop_pet:
   enabled: true
   size: 96
-  default_corner: "bottom-right"  # bottom-right / bottom-left / top-right / bottom-left
-  character: "chen_qianyu"  # 桌宠角色 (启动恢复): chen_qianyu / wang_lin / xiyue / yunyun / lian
+  default_corner: "bottom-right"  # bottom-right / bottom-left / top-right / top-left
+  character: "chen_qianyu"  # 桌宠角色 (启动恢复): chen_qianyu / wang_lin / xiyue / yunyun / lian / han_li / yinyue / yinyue_yaohu
+  always_on_top: true  # 是否始终置顶
   hotkey_toggle: "<ctrl>+<alt>+p"  # 切换显示/隐藏
-  bubble_mode: "ai"  # 台词模式: ai (AI 生成) / manual (手动预设)
-  bubble_lines:  # 仅当 bubble_mode=manual 时生效
+  bubble_lines:  # 点击桌宠时随机弹的台词
     - "主人好呀"
     - "今天深圳下雨哦"
     - "音乐好听吗？"

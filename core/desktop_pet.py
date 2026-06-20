@@ -392,6 +392,23 @@ class DesktopPet(QWidget):
         return [(k, name) for k, name, _, _ in self.CHARACTERS]
 
     # ==================================================================
+    # 置顶开关
+    # ==================================================================
+    def set_stay_on_top(self, on: bool) -> None:
+        """切换桌宠是否置顶"""
+        if on:
+            flags = self.windowFlags() | Qt.WindowType.WindowStaysOnTopHint
+        else:
+            flags = self.windowFlags() & ~Qt.WindowType.WindowStaysOnTopHint
+        self.setWindowFlags(flags)
+        self.show()  # 应用 windowFlags 需要重新 show()
+        self.raise_()
+
+    def is_on_top(self) -> bool:
+        """是否处于置顶状态"""
+        return bool(self.windowFlags() & Qt.WindowType.WindowStaysOnTopHint)
+
+    # ==================================================================
     # 动画推进
     # ==================================================================
     def _advance_animation(self, dt: float) -> None:

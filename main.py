@@ -916,6 +916,17 @@ def main() -> int:
                     else:
                         logger.warning(f"⚠️ 切换桌宠角色失败: {name}")
 
+            # 桌宠置顶回调
+            _pet_on_top = config.get("desktop_pet", {}).get("always_on_top", True)
+            def _on_pet_always_on_top(on: bool) -> None:
+                if _pet is not None:
+                    _pet.set_stay_on_top(on)
+                    logger.info(f"📌 桌宠置顶: {'开' if on else '关'}")
+                    save_config_value("desktop_pet.always_on_top", on)
+        else:
+            _on_pet_always_on_top = None
+            _pet_on_top = False
+
         tray = MoonDeckTray(
             live_widgets=_live_widgets,
             on_reset_layout=lambda: (reset_layout(logger), _refresh_all_widgets(logger)),
@@ -928,6 +939,8 @@ def main() -> int:
             on_pet_character_change=_on_pet_char_change,
             available_pet_characters=_available_pet_chars,
             current_pet_character=_current_pet_char,
+            on_pet_always_on_top=_on_pet_always_on_top,
+            pet_always_on_top=_pet_on_top,
         )
         logger.info("✅ 系统托盘初始化完成")
     except Exception as e:
