@@ -102,32 +102,34 @@ class DesktopPet(QWidget):
     BUBBLE_H = 24    # 气泡预留区高度 (上方, 按比例缩小)
 
     # 可用角色列表 (key, 显示名, sprite sheet 文件名, 默认 row)
-    # Petdex Codex 格式: 1536x1872 = 8列 x 9行, cell 192x208
     CHARACTERS = [
-        ("chen_qianyu",  "陈千语",       "chen-qianyu_sheet.png",       0),
-        ("wang_lin",     "问鼎王林",     "wang-lin-wending-pixel_sheet.png", 0),
-        ("xiyue",        "汐月同学",     "xiyue_sheet.png",             0),
-        ("yunyun",       "晕晕",         "yunyun_sheet.png",            0),
-        ("lian",         "Lian",         "lian_sheet.png",              0),
-        ("han-li",       "韩立",         "han-li_sheet.png",            0),
-        ("yinyue-2",     "银月",         "yinyue-2_sheet.png",          0),
-        ("yinyue-yaohu", "银月(妖狐)",   "yinyue-yaohu_sheet.png",      0),
+        ("chen_qianyu",  "陈千语",     "chen-qianyu_sheet.png",       0),
+        ("wang_lin",     "问鼎王林",   "wang-lin-wending-pixel_sheet.png", 0),
+        ("xiyue",        "汐月同学",   "xiyue_sheet.png",              0),
+        ("yunyun",       "晕晕",       "yunyun_sheet.png",             0),
+        ("lian",         "Lian",       "lian_sheet.png",               0),
+        ("han_li",       "韩立",       "han-li_sheet.png",             0),
+        ("yinyue",       "银月",       "yinyue-2_sheet.png",           0),
+        ("yinyue_yaohu", "银月妖狐",   "yinyue-yaohu_sheet.png",       0),
     ]
 
-    # 台词已迁移到 core/pet_dialogue.py，支持 AI 实时生成
+    # 随机台词 (可放 yaml 配置, 暂写死)
+    BUBBLE_LINES = [
+        "主人好呀",
+        "今天深圳下雨哦",
+        "音乐好听吗？",
+        "别忘了喝水",
+        "月色真美",
+        "再忙也要休息",
+        "加油~",
+        "...",
+        "夜深了，早点睡",
+        "工作顺利吗",
+        "吃点东西吧",
+    ]
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 天气 + 音乐状态缓存（供台词生成使用）
-        self._weather_cache: Optional[Dict] = None
-        self._music_cache: Optional[Dict] = None
-        self._update_context_timer = QTimer(self)
-        self._update_context_timer.timeout.connect(self._update_context)
-        self._update_context_timer.start(60000)  # 每分钟刷新一次上下文
-
-        # 启动台词预缓存后台线程
-        from core.pet_dialogue import start_cache
-        start_cache()
 
         # 窗口: 无边框、置顶、tool (不抢任务栏)
         self.setWindowFlags(
@@ -320,7 +322,7 @@ class DesktopPet(QWidget):
             self.setCursor(Qt.CursorShape.ArrowCursor)
             self._dock_to_edge()
             # 弹个气泡
-            self._show_bubble(self._get_dialogue())
+            self._show_bubble(random.choice(self.BUBBLE_LINES))
             # 点击 → waving 动作 (row 3, 4 帧)
             self._current_row = 3
             self._current_frame = 0
@@ -429,38 +431,6 @@ class DesktopPet(QWidget):
         self._bubble_text = text
         self._bubble_time = 3.0
         self._bubble_showing = True
-
-    def _update_context(self) -> None:
-        """更新天气和音乐状态缓存，触发台词刷新"""
-        # 天气
-        try:
-            from cards.calendar_card.weather_widget import WeatherWidget
-            if hasattr(WeatherWidget, '_current_weather'):
-                self._weather_cache = WeatherWidget._current_weather
-        except Exception:
-            pass
-        # 音乐
-        try:
-            from cards.music_card import audio_viz
-            np_ = audio_viz.get_now_playing()
-            self._music_cache = {
-                "playing": getattr(np_, "playing", False),
-                "title": getattr(np_, "song_title", ""),
-                "artist": getattr(np_, "song_artist", ""),
-            }
-        except Exception:
-            pass
-        # 更新台词缓存
-        from core.pet_dialogue import _dialogue_cache
-        _dialogue_cache.set_context(self._weather_cache, self._music_cache)
-
-    def _get_dialogue(self) -> str:
-        """获取台词（从缓存取，零延迟）"""
-        from core.pet_dialogue import generate_dialogue
-        return generate_dialogue(
-            weather=self._weather_cache,
-            music=self._music_cache,
-        )
 
     # ==================================================================
     # 绘制
@@ -580,8 +550,6 @@ class DesktopPet(QWidget):
     # ==================================================================
     def stop(self) -> None:
         self._timer.stop()
-        from core.pet_dialogue import stop_cache
-        stop_cache()
 
     def closeEvent(self, event):
         self._timer.stop()
