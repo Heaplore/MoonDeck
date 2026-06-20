@@ -1,0 +1,92 @@
+# MoonDeck 主题配置 v0.3(2026-06-13 冷蓝紫调)
+# 老大要求:参考 16:9 横向布局图,改成深紫蓝 + 冷青 + 紫的玻璃质感
+# 卡片可订阅 ThemeManager.theme_changed signal 热更新
+
+themes:
+  dark:
+    # 画布背景(深紫蓝径向渐变 + 左上角冷青发光)
+    # canvas.py 会用 background_canvas_start/end 单独画背景
+    background: "#1A2348"              # 卡片底色(深藏青,带 0.55 透明)
+    background_gradient_end: "#0F1632"  # 卡片底色渐变末端
+    background_canvas_start: "#0E1230" # 画布底色(中心)
+    background_canvas_end: "#070918"   # 画布底色(边缘)
+    background_glow: "#B4C8DC"         # 左上角发光点颜色
+    # 边框/描边
+    border: "rgba(180, 200, 220, 0.20)"  # 卡片边框(半透)
+    border_solid: "#B4C8DC"              # 实心(导出用)
+    # 文字
+    text_primary: "#E8F4F8"       # 主文字(冷白)
+    text_secondary: "#8FA8C0"     # 次文字(冷灰蓝)
+    text_caption: "#5A6A85"       # 辅助文字
+    # 状态色
+    accent: "#9F7CFF"             # 主点缀色(紫)
+    accent_text: "#B4C8DC"          # 文字点缀(天气/节日)
+    success: "#B4C8DC"            # 成功
+    warning: "#FFD56B"            # 警告(暖黄)
+    danger: "#FF6B8A"             # 危险(粉红)
+    # 尺寸
+    corner_radius: 24
+    border_width: 1.5
+    # 进度条专用
+    bar_m3_start: "#B4C8DC"       # M3 进度条
+    bar_m3_end: "#C8D8E8"
+    bar_m27_start: "#9F7CFF"      # M2.7 进度条(紫)
+    bar_m27_end: "#B89FFF"
+    bar_weekly_start: "#9F7CFF"   # 周用量(紫)
+
+  light:
+    background: "#ffffff"
+    background_gradient_end: "#f7fafc"
+    border: "#3182ce"
+    accent: "#dd6b20"
+    text_primary: "#1a202c"
+    text_secondary: "#4a5568"
+    success: "#38a169"
+    warning: "#dd6b20"
+    danger: "#e53e3e"
+    corner_radius: 12
+    border_width: 1
+
+  glass:
+    background: "rgba(255, 255, 255, 0.1)"
+    background_gradient_end: "rgba(255, 255, 255, 0.05)"
+    border: "rgba(255, 255, 255, 0.3)"
+    accent: "#f6ad55"
+    text_primary: "#ffffff"
+    text_secondary: "rgba(255, 255, 255, 0.7)"
+    success: "#48bb78"
+    warning: "#ed8936"
+    danger: "#f56565"
+    corner_radius: 16
+    border_width: 1
+
+  neon:
+    background: "#0a0a1a"
+    background_gradient_end: "#1a0a2e"
+    border: "#00ff88"
+    accent: "#ff00ff"
+    text_primary: "#00ff88"
+    text_secondary: "rgba(0, 255, 136, 0.6)"
+    success: "#00ff88"
+    warning: "#ffaa00"
+    danger: "#ff0066"
+    corner_radius: 8
+    border_width: 2
+
+fonts:
+  family: "Microsoft YaHei UI, Segoe UI, sans-serif"
+  family_mono: "Consolas, Courier New, monospace"
+  sizes:
+    title: 16
+    subtitle: 11
+    metric: 28
+    caption: 9
+    body: 12
+    hero: 56       # 大数字(主指标)
+    section: 14    # 章节标题
+
+animation:
+  duration_ms: 200
+  card_fade_in: 300
+  card_fade_out: 200
+  drag_threshold: 5

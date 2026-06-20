@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8" />
+<title>月坞 Silvermoon v0.2 Mockup</title>
+<style>
+  :root {
+    /* Silvermoon 主题 v0.2 - 冷蓝调 */
+    --bg-0: #0B0F1C;     /* 最深背景 */
+    --bg-1: #13192A;     /* 卡底起点 */
+    --bg-2: #1A2240;     /* 卡底终点 */
+    --border-idle: rgba(125, 184, 217, 0.25);
+    --border-hover: rgba(125, 184, 217, 0.65);
+    --title: #DCE3F0;
+    --main: #E8EEF8;
+    --muted: rgba(220, 227, 240, 0.55);
+    --cyan: #7DB8D9;
+    --amber: #A8C5E0;
+    --green: #7DB8D9;
+    --yellow: #A8C5E0;
+    --red: #D97D7D;
+    --shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+    --radius: 16;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: radial-gradient(ellipse at 30% 20%, #1A0F33 0%, #0A0617 60%, #000 100%);
+    font-family: "Microsoft YaHei UI", "Segoe UI", system-ui, sans-serif;
+    color: var(--title);
+    min-height: 100vh;
+    padding: 40px;
+    overflow-x: auto;
+  }
+
+  h1 {
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--muted);
+    margin-bottom: 32px;
+    letter-spacing: 1px;
+  }
+
+  .row {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  /* ====== 卡片统一骨架 ====== */
+  .card {
+    position: relative;
+    width: 320px;
+    border-radius: 16px;
+    background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    border: 1.5px solid var(--border-idle);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+  .card.hovered { border-color: var(--border-hover); }
+
+  /* 月光边角光晕 */
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 120px; height: 120px;
+    background: radial-gradient(circle, rgba(125, 184, 217, 0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* 标题栏 */
+  .header {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px 10px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .header .icon { font-size: 16px; margin-right: 8px; }
+  .header .name { font-size: 14px; font-weight: 500; flex: 1; letter-spacing: 0.5px; }
+  .header .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+  }
+  .header .sub {
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* 内容区 */
+  .body {
+    padding: 18px;
+  }
+
+  /* 状态行 */
+  .footer {
+    display: flex;
+    align-items: center;
+    padding: 8px 18px;
+    font-size: 10px;
+    color: var(--muted);
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+    background: rgba(0, 0, 0, 0.15);
+  }
+  .footer .src { color: var(--muted); }
+  .footer .ts { margin-left: auto; }
+
+  /* ====== Token 卡片 ====== */
+  .token-card { width: 320px; height: 220px; }
+  .token-row { display: flex; align-items: baseline; margin-bottom: 14px; }
+  .token-name { font-size: 13px; color: var(--title); margin-right: 8px; }
+  .token-amount { font-size: 32px; font-weight: 600; color: var(--main); margin-right: 6px; }
+  .token-unit { font-size: 12px; color: var(--muted); }
+
+  .progress-block { margin-bottom: 14px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .progress-bar { height: 6px; background: rgba(255, 255, 255, 0.08); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #4A6B8A 0%, var(--cyan) 100%); border-radius: 3px; }
+  .progress-fill.green { background: linear-gradient(90deg, #5A8AA8 0%, var(--cyan) 100%); }
+
+  .token-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; margin-top: 14px; padding-top: 14px; border-top: 1px dashed rgba(255, 255, 255, 0.08); }
+  .stat-label { font-size: 10px; color: var(--muted); }
+  .stat-value { font-size: 14px; color: var(--main); margin-top: 2px; }
+
+  /* ====== Weather 卡片 ====== */
+  .weather-card { width: 320px; height: 240px; }
+  .weather-top { display: flex; align-items: center; margin-bottom: 18px; }
+  .weather-icon { font-size: 56px; margin-right: 18px; }
+  .weather-temp { font-size: 48px; font-weight: 300; color: var(--main); }
+  .weather-temp .deg { font-size: 20px; color: var(--muted); vertical-align: top; }
+  .weather-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .weather-detail { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding-top: 14px; border-top: 1px dashed rgba(255, 255, 255, 0.08); }
+  .weather-detail .item .label { font-size: 10px; color: var(--muted); }
+  .weather-detail .item .value { font-size: 14px; color: var(--main); margin-top: 2px; }
+
+  /* ====== Calendar 卡片 ====== */
+  .calendar-card { width: 360px; height: 540px; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; }
+  .cal-day-head { font-size: 10px; color: var(--muted); text-align: center; padding: 6px 0; letter-spacing: 1px; }
+  .cal-day { font-size: 12px; text-align: center; padding: 8px 0; border-radius: 8px; color: var(--muted); }
+  .cal-day.has-event { background: rgba(125, 184, 217, 0.12); color: var(--title); }
+  .cal-day.today { background: var(--cyan); color: #0B0F1C; font-weight: 700; box-shadow: 0 0 12px rgba(125, 184, 217, 0.5); }
+  .cal-day.muted { opacity: 0.35; }
+  .cal-events { margin-top: 16px; padding-top: 14px; border-top: 1px dashed rgba(255, 255, 255, 0.08); }
+  .cal-event { display: flex; align-items: center; padding: 6px 0; font-size: 12px; }
+  .cal-event .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--amber); margin-right: 10px; }
+  .cal-event .time { color: var(--muted); width: 50px; }
+  .cal-event .name { color: var(--title); flex: 1; }
+
+  /* 标注 */
+  .annotation {
+    color: var(--amber);
+    font-size: 11px;
+    text-align: center;
+    margin-top: 8px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+
+<h1>月坞 · Silvermoon 主题 Mockup (v0.1)</h1>
+
+<div class="row">
+
+  <!-- ============== TOKEN CARD ============== -->
+  <div>
+    <div class="card token-card">
+      <div class="header">
+        <span class="icon">💎</span>
+        <span class="name">Token 用量</span>
+        <span class="status-dot"></span>
+        <span class="sub">LIVE</span>
+      </div>
+      <div class="body">
+        <div class="token-row">
+          <div class="token-amount">5,720</div>
+          <div class="token-unit">/ 50,000 tokens</div>
+        </div>
+
+        <div class="progress-block">
+          <div class="progress-label"><span>MiniMax-M3</span><span>11.4%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width: 11.4%"></div></div>
+        </div>
+        <div class="progress-block">
+          <div class="progress-label"><span>MiniMax-M2.7</span><span>4.8%</span></div>
+          <div class="progress-bar"><div class="progress-fill" style="width: 4.8%"></div></div>
+        </div>
+
+        <div class="token-grid">
+          <div><div class="stat-label">今日用量</div><div class="stat-value">1,847</div></div>
+          <div><div class="stat-label">剩余预算</div><div class="stat-value">44,280</div></div>
+          <div><div class="stat-label">$/月</div><div class="stat-value">$0.23</div></div>
+          <div><div class="stat-label">$/天</div><div class="stat-value">$0.008</div></div>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="src">🟢 mmx quota · 实时</span>
+        <span class="ts">14:30 刷新</span>
+      </div>
+    </div>
+    <div class="annotation">token_card · 统一骨架</div>
+  </div>
+
+  <!-- ============== WEATHER CARD ============== -->
+  <div>
+    <div class="card weather-card">
+      <div class="header">
+        <span class="icon">🌙</span>
+        <span class="name">深圳 · 天气</span>
+        <span class="status-dot" style="background: var(--yellow); box-shadow: 0 0 6px var(--yellow)"></span>
+        <span class="sub">CACHE 5m</span>
+      </div>
+      <div class="body">
+        <div class="weather-top">
+          <div class="weather-icon">🌤️</div>
+          <div>
+            <div class="weather-temp">28<span class="deg">°C</span></div>
+            <div class="weather-meta">多云转晴 · 体感 31°</div>
+          </div>
+        </div>
+        <div class="weather-detail">
+          <div class="item"><div class="label">湿度</div><div class="value">72%</div></div>
+          <div class="item"><div class="label">风速</div><div class="value">3.2 m/s</div></div>
+          <div class="item"><div class="label">PM2.5</div><div class="value">38</div></div>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="src">🟡 wttr.in · 5m 前</span>
+        <span class="ts">14:25 刷新</span>
+      </div>
+    </div>
+    <div class="annotation">weather_card · 统一骨架</div>
+  </div>
+
+  <!-- ============== CALENDAR CARD ============== -->
+  <div>
+    <div class="card calendar-card">
+      <div class="header">
+        <span class="icon">📅</span>
+        <span class="name">六月 · 行事历</span>
+        <span class="status-dot"></span>
+        <span class="sub">SYNCED</span>
+      </div>
+      <div class="body">
+        <div class="cal-grid">
+          <div class="cal-day-head">日</div>
+          <div class="cal-day-head">一</div>
+          <div class="cal-day-head">二</div>
+          <div class="cal-day-head">三</div>
+          <div class="cal-day-head">四</div>
+          <div class="cal-day-head">五</div>
+          <div class="cal-day-head">六</div>
+
+          <div class="cal-day muted">31</div>
+          <div class="cal-day">1</div>
+          <div class="cal-day">2</div>
+          <div class="cal-day">3</div>
+          <div class="cal-day">4</div>
+          <div class="cal-day">5</div>
+          <div class="cal-day">6</div>
+
+          <div class="cal-day">7</div>
+          <div class="cal-day">8</div>
+          <div class="cal-day">9</div>
+          <div class="cal-day">10</div>
+          <div class="cal-day">11</div>
+          <div class="cal-day">12</div>
+          <div class="cal-day has-event">13</div>
+
+          <div class="cal-day has-event">14</div>
+          <div class="cal-day">15</div>
+          <div class="cal-day has-event">16</div>
+          <div class="cal-day">17</div>
+          <div class="cal-day">18</div>
+          <div class="cal-day has-event">19</div>
+          <div class="cal-day">20</div>
+
+          <div class="cal-day">21</div>
+          <div class="cal-day">22</div>
+          <div class="cal-day">23</div>
+          <div class="cal-day">24</div>
+          <div class="cal-day">25</div>
+          <div class="cal-day">26</div>
+          <div class="cal-day">27</div>
+
+          <div class="cal-day">28</div>
+          <div class="cal-day">29</div>
+          <div class="cal-day has-event">30</div>
+          <div class="cal-day muted">1</div>
+          <div class="cal-day muted">2</div>
+          <div class="cal-day muted">3</div>
+          <div class="cal-day muted">4</div>
+        </div>
+
+        <div class="cal-events">
+          <div class="cal-event">
+            <span class="dot"></span>
+            <span class="time">14:00</span>
+            <span class="name">月坞 UI 美化评审</span>
+          </div>
+          <div class="cal-event">
+            <span class="dot" style="background: #B794F4"></span>
+            <span class="time">16:30</span>
+            <span class="name">银月 cron 巡检</span>
+          </div>
+          <div class="cal-event">
+            <span class="dot" style="background: var(--green)"></span>
+            <span class="time">22:00</span>
+            <span class="name">小说创作时段</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <span class="src">🟢 Feishu · 已同步</span>
+        <span class="ts">14:30 刷新</span>
+      </div>
+    </div>
+    <div class="annotation">calendar_card · 统一骨架</div>
+  </div>
+
+</div>
+
+<div style="margin-top:48px; padding: 24px; background: rgba(255,255,255,0.04); border-radius: 12px; font-size: 12px; color: var(--muted); line-height: 1.8; max-width: 1100px;">
+  <div style="color: var(--amber); font-size: 14px; margin-bottom: 12px;">📐 设计要点</div>
+  1. <b style="color:var(--title)">统一骨架</b>:卡片 = 圆角矩形 + 渐变底 + 月光边角光晕 + 标题栏(icon + name + 状态点) + 状态行(数据源 + 刷新时间)<br>
+  2. <b style="color:var(--title)">配色</b>:深夜蓝渐变 #13192A → #1A2240,月光白标题,冷青 #7DB8D9 当强调色,状态点自带光晕<br>
+  3. <b style="color:var(--title)">订阅主题</b>:三张卡都从 ThemeManager 拿色值,切 dark/light/glass/silvermoon 都一致<br>
+  4. <b style="color:var(--title)">留白</b>:内部 18px padding,行间 14px 节奏,避免视觉拥挤<br>
+  5. <b style="color:var(--title)">可扩展</b>:之后做倒计时/便签/音乐等其他卡,直接继承骨架只换内容区<br>
+</div>
+
+</body>
+</html>

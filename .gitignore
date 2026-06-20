@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Executables
+*.exe
+*.pkg
+
+# Database
+*.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Session / screenshots
+session-*.png
+*.tmp
+*.png
+*.jpg
+*.jpeg
+
+# Config files with secrets
+.st_hwnd.txt
+
+# Render/debug scripts
+render_*.py
+render_*.log
+
+# Virtual env
+venv/
+.venv/

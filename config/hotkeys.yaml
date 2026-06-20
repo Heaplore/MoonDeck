@@ -1,0 +1,27 @@
+# MoonDeck 全局快捷键配置
+# 格式遵循 pynput.keyboard.Key / KeyCode 规范
+# 字符串格式: <ctrl>+<alt>+t / <shift>+a 等
+# 注意: 占位项，等 HotkeyManager 实现时启用
+
+hotkeys:
+  # 画布交互
+  toggle_interactive_mode: "<alt>"           # Alt 按住 = 交互态
+  force_exit_interactive: "<esc>"            # Esc = 强制退出交互
+  hide_all_cards: "<ctrl>+<alt>+h"           # 全部隐藏
+  show_all_cards: "<ctrl>+<alt>+s"           # 全部显示
+
+  # 主题
+  cycle_theme: "<ctrl>+<alt>+t"              # 切换下一个主题
+
+  # 卡片操作
+  open_search: "<ctrl>+<space>"              # 全局搜索卡片
+  open_silvermoon: "<ctrl>+<alt>+y"          # 银月直连卡片
+  create_sticky: "<ctrl>+<alt>+n"            # 新建便签
+
+  # 布局
+  reset_layout: "<ctrl>+<alt>+r"             # 重置布局
+  save_layout: "<ctrl>+<alt>+l"              # 立即保存布局
+
+  # 系统
+  quit: "<ctrl>+<alt>+q"                     # 退出 MoonDeck
+  reload: "<ctrl>+<alt>+<f5>"                # 重载配置

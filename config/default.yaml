@@ -1,0 +1,74 @@
+﻿# MoonDeck 默认配置 v0.4 (2026-06-14)
+# 老大改版:砍掉银月,天气+token 集成进月历,只留月历一张卡片
+# 任何一项缺失都会回退到内置默认值
+
+app:
+  name: "MoonDeck 月坞"
+  version: "0.4.0"
+  debug: false
+  single_instance: true
+
+canvas:
+  fullscreen: true
+  click_through: true
+  interactive_hotkey: "<alt>"
+  exit_interactive_hotkey: "<esc>"
+  span_all_screens: true
+
+storage:
+  db_path: "cache/moondeck.db"
+  auto_save_interval: 30
+
+theme:
+  default: "dark"
+  available:
+    - "dark"
+    - "light"
+    - "glass"
+    - "neon"
+
+cards:
+  # 启动时加载的卡片
+  startup:
+    - "calendar_card"
+  # 卡片位置
+  default_positions:
+    calendar_card:
+      anchor: top_right   # 右上角
+      width: 380
+      height: 840  # 529(月历) + 320(音乐) + 余量
+
+logging:
+  level: "INFO"
+  file: "logs/moondeck.log"
+  max_bytes: 10485760
+  backup_count: 5
+
+# v0.7 新增: 音频律动背景
+desktop_background:
+  enabled: true
+  particles: 70
+  show_spectrum: true  # 音乐播放时显示底部频谱条
+  hotkey_toggle: "<ctrl>+<alt>+b"  # 切换显示/隐藏
+  visualizer: "nebula"  # 上次选择的动效 (启动时自动恢复): nebula / starfield / mandala
+  lyrics_mode: "lyrics_particle"  # 上次选择的歌词动效: lyrics_stream / lyrics_particle
+
+# v0.7 新增: 小紫桌宠
+desktop_pet:
+  enabled: true
+  size: 96
+  default_corner: "bottom-right"  # bottom-right / bottom-left / top-right / top-left
+  character: "chen_qianyu"  # 桌宠角色 (启动恢复): chen_qianyu / wang_lin / xiyue / yunyun / lian
+  hotkey_toggle: "<ctrl>+<alt>+p"  # 切换显示/隐藏
+  bubble_lines:  # 点击桌宠时随机弹的台词
+    - "主人好呀"
+    - "今天深圳下雨哦"
+    - "音乐好听吗？"
+    - "别忘了喝水"
+    - "月色真美"
+    - "再忙也要休息"
+    - "加油~"
+    - "..."
+    - "夜深了，早点睡"
+    - "工作顺利吗"
+    - "吃点东西吧"
