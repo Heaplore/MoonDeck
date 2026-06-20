@@ -121,6 +121,10 @@ class DesktopPet(QWidget):
         self._update_context_timer.timeout.connect(self._update_context)
         self._update_context_timer.start(60000)  # 每分钟刷新一次上下文
 
+        # 启动台词预缓存后台线程
+        from core.pet_dialogue import start_cache
+        start_cache()
+
         # 窗口: 无边框、置顶、tool (不抢任务栏)
         self.setWindowFlags(
             Qt.WindowType.FramelessWindowHint
@@ -423,7 +427,7 @@ class DesktopPet(QWidget):
         self._bubble_showing = True
 
     def _update_context(self) -> None:
-        """更新天气和音乐状态缓存"""
+        """更新天气和音乐状态缓存，触发台词刷新"""
         # 天气
         try:
             from cards.calendar_card.weather_widget import WeatherWidget
@@ -442,9 +446,12 @@ class DesktopPet(QWidget):
             }
         except Exception:
             pass
+        # 更新台词缓存
+        from core.pet_dialogue import _dialogue_cache
+        _dialogue_cache.set_context(self._weather_cache, self._music_cache)
 
     def _get_dialogue(self) -> str:
-        """获取台词（AI 生成或回退）"""
+        """获取台词（从缓存取，零延迟）"""
         from core.pet_dialogue import generate_dialogue
         return generate_dialogue(
             weather=self._weather_cache,
@@ -569,6 +576,8 @@ class DesktopPet(QWidget):
     # ==================================================================
     def stop(self) -> None:
         self._timer.stop()
+        from core.pet_dialogue import stop_cache
+        stop_cache()
 
     def closeEvent(self, event):
         self._timer.stop()
